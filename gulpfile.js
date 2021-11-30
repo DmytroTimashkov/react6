@@ -1,26 +1,35 @@
-const { src, dest, parallel } = require('gulp');
+const { watch ,parallel} = require('gulp');
 
-const copyFile = (done) => {
-    src('dist/scss/index.scss').pipe(dest('build/styles'));
-    src('dist/pages/*.html').pipe(dest('build/pages'));
+const changeAppStylesFile = (done) => {
+    console.log('Ой, файл index.scss изменился');
 
-    done()
+    done();
 };
-const scssFile = (done) => {
-  src('dist/scss/index.scss').pipe(dest('build/styles'));
-  done()
-};
-const readyFile = (done) => {
-  console.log('ready');
+const changeAppHTMLFile = (done) => {
+  console.log('Ой, один из файлов HTML изменился');
 
   done();
 };
-const htmlFile = (done) => {
-  src('dist/scss/index.scss').pipe(dest('build/styles'));
-  done()
+
+const checkFileStructure = (done) => {
+    console.log('Изменилась структура файлов');
+
+    done();
 };
 
+const watchersSCSS = () => {
 
-exports.default = parallel(readyFile,copyFile);
-exports.SASS = scssFile;
-exports.HTML = htmlFile;
+    watch('dist/scss/index.scss', { events: 'change' }, changeAppStylesFile);
+
+
+    watch('dist/scss/', { events: ['add', 'unlink'] }, checkFileStructure);
+};
+const watchersHTML = () => {
+
+  watch('dist/pages/*.html', { events: 'change' }, changeAppHTMLFile);
+
+
+  watch('dist/pages/', { events: ['add', 'unlink'] }, checkFileStructure);
+};
+
+exports.watchers = parallel(watchersSCSS,watchersHTML);
